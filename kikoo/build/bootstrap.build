@@ -1,0 +1,7 @@
+project = kikoo
+
+using version
+using config
+using test
+using dist
+using install

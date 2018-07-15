@@ -1,0 +1,7 @@
+project = lol
+
+using version
+using config
+using test
+using dist
+using install
