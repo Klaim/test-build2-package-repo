@@ -1,0 +1,38 @@
+int_libs = # Interface dependencies.
+imp_libs = # Implementation dependencies.
+#import imp_libs += libhello%lib{hello}
+
+lib{nice}: {hxx ixx txx cxx}{** -version} hxx{version} $imp_libs $int_libs
+
+# Include the generated version header into the distribution (so that we don't
+# pick up an installed one) and don't remove it when cleaning in src (so that
+# clean results in a state identical to distributed).
+#
+hxx{version}: in{version} $src_root/manifest
+hxx{version}: dist  = true
+hxx{version}: clean = ($src_root != $out_root)
+
+cxx.poptions =+ "-I$out_root" "-I$src_root"
+lib{nice}: cxx.export.poptions = "-I$out_root" "-I$src_root"
+
+liba{nice}: cxx.export.poptions += -DLIBNICE_STATIC
+libs{nice}: cxx.export.poptions += -DLIBNICE_SHARED
+
+obja{*}: cxx.poptions += -DLIBNICE_STATIC_BUILD
+objs{*}: cxx.poptions += -DLIBNICE_SHARED_BUILD
+
+lib{nice}: cxx.export.libs = $int_libs
+
+# For pre-releases use the complete version to make sure they cannot be used
+# in place of another pre-release or the final version.
+#
+if $version.pre_release
+  lib{nice}: bin.lib.version = @"-$version.project_id"
+else
+  lib{nice}: bin.lib.version = @"-$version.major.$version.minor"
+
+# Install into the libnice/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}: install         = include/$project/
+{hxx ixx txx}{*}: install.subdirs = true

@@ -1,0 +1,6 @@
+$out_root/
+{
+  include libnice/
+}
+
+export $out_root/libnice/lib{nice}
